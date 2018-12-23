@@ -1,3 +1,4 @@
+import time
 import socket
 import datetime
 import serial.tools.list_ports
@@ -17,19 +18,29 @@ def scan_serial_ports():
     for p in serial_ports:
         try:
             # configure the serial connections (the parameters differs on the device you are connecting to)
-            ser = serial.Serial(p.device, SER_BAUDRATE, timeout=1)
+            ser = serial.Serial('COM6') #p.device, timeout=1)
             print(p.device)
-            ser.write("STA\n")
-            ser.flush()
-            msg = ser.readline()
-            debug_print(msg)
+            for i in range(10):
+                ser.write('ENA03000\n')
+                ser.flush()
+                time.sleep(0.5)
+                ser.write('ENA03001\n')
+                ser.flush()
+                time.sleep(0.5)
+            #msg = ser.readline()
+            #debug_print(msg)
+            ser.close()
             controllers.append(p.device)
         except (OSError, serial.SerialException):
             debug_print("Failed to connect to :" + p.device)
 
 
 def send_to_ctrl(msg):
-    debug_print("Send to Ctrl: " + msg)
+    debug_print("Send to Ctrl: " + controllers[0] + " -> " + msg.strip())
+    with serial.Serial(controllers[0], timeout=1) as ser:
+        ser.write(msg.encode('ascii'))
+        ser.flush()
+        debug_print('Sent: ' + msg.encode('ascii').strip())
 
 
 def main():
@@ -51,12 +62,12 @@ def main():
 
         debug_print('Got a connection from {}'.format(str(addr)))
 
-        msg = "CONNECTEDn"
+        msg = "CONNECTED\n"
         clientsocket.send(msg.encode('ascii'))
 
         while not "DISCONNECT" in msg:
             msg = clientsocket.recv(1024).decode('ascii')
-            debug_print("Received: " + msg)
+            debug_print("Socket received: " + msg.strip())
             send_to_ctrl(msg)
 
         msg = "Closing connection\n"
