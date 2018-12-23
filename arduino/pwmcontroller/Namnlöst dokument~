@@ -1,0 +1,7 @@
+To Enable channel
+ENAxxyyy - must be exactly two char: xx=channel, yyy= 001 or 000
+PWMxxyyy - xx = ch, yyy = value 0-255 not available for all channels
+STA - REturn current status
+
+Return in the form ch:en:pwm:blink\n
+ 
