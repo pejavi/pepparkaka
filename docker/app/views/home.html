@@ -39,22 +39,18 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{name}} <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li ng-repeat="menu in mainMenu">
-                  <a href="#">{{menu.name}} <span class="caret"></span></a>
-                  <ul ng-if="menu.type=='RGB'" class="dropdown-menu sub-menu">
-                    <li ng-repeat="(colour,name) in pepparkaka.colours" class="{'active':menu.state==colour}">
-                      <a href="#" ng-click="pepparkaka.setPepparkaka(menu,colour.substr(1,2),colour.substr(3,2),colour.substr(5,2))">
+                  <a href="#">{{menu.name}} <span class="badge">{{menu.port}}</span> <span class="caret"></span></a>
+                  <ul class="dropdown-menu sub-menu">
+                    <li ng-repeat="(colour,name) in menu.type=='RGB'? pepparkaka.colours:{'#000000':'Off','#FFFFFF':'On'}" class="{'active':menu.state==colour}">
+                      <a href="#" ng-click="pepparkaka.setPepparkaka(menu,colour.substr(1,2),colour.substr(3,2),colour.substr(5,2),'set')">
                         <span style="background:{{colour}};border:1px solid grey;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         &nbsp;
                         {{name}}
                       </a>
                     </li>
-                  </ul>
-                  <ul ng-if="menu.type=='BW'" class="dropdown-menu sub-menu">
-                    <li ng-repeat="(colour,name) in {'#000000':'Off','#FFFFFF':'On'}" class="{'active':menu.state==colour}">
-                      <a href="#" ng-click="pepparkaka.setPepparkaka(menu,colour.substr(1,2),colour.substr(3,2),colour.substr(5,2))">
-                        <span style="background:{{colour}};border:1px solid grey;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        &nbsp;
-                        {{name}}
+                    <li>
+                      <a href="#" ng-click="pepparkaka.setPepparkaka(menu,null,null,null,'blink')">
+                        BLINK
                       </a>
                     </li>
                   </ul>

@@ -33,6 +33,16 @@ class Pepparkaka {
     $red = sprintf("%03d", hexdec( $post->red ) );
     $green = sprintf("%03d", hexdec( $post->green ) );
     $blue = sprintf("%03d", hexdec( $post->blue ) );
+    $mode = ( $post->mode == "blink"? "BLI":"RGB" );
+    if( $red > 180 ) {
+      $red = sprintf("%03d", 180 );
+    }
+    if( $green > 180 ) {
+      $green = sprintf("%03d", 180 );
+    }
+    if( $blue > 180 ) {
+      $blue = sprintf("%03d", 180 );
+    }
     if( $red == $green AND $red == $blue ) {
       $red = sprintf("%03d", 0 );
       $green = sprintf("%03d", 0 );
@@ -41,11 +51,15 @@ class Pepparkaka {
     } else {
       $white = sprintf("%03d", 0 );
     }
-    $command = "RGB" . $port . $red . $green . $blue . $white . "\n";
-    socket_write($this->socket,$command,strlen($command));
+
+    $command1 = $mode . $port . ( $mode == "RGB"? $red . $green . $blue . $white : "" ) . "\n";
+    socket_write($this->socket,$command1,strlen($command1));
+
+    $command2 = "DISCONNECT\n";
+    socket_write($this->socket,$command2,strlen($command2));
 
     header( "Content-Type: application/json" );
-    echo json_encode( ['success'=>TRUE,'colours'=>[$red,$green,$blue,$white]] );
+    echo json_encode( ['success'=>TRUE,'colours'=>[$red,$green,$blue,$white],'command'=>$command1] );
   }
 
 }
