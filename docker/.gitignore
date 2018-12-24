@@ -1,0 +1,8 @@
+/.idea
+variables.env
+production.yml
+/data/nginx/*
+/data/mysql/persistent/
+/prod
+/node_modules
+/app/node_modules
