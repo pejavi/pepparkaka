@@ -20,5 +20,10 @@
 4. Build app
 `docker-compose build`
 
-4. Start app
+5. Start app
 `docker-compose up -d --force-recreate`
+
+---------
+1. Pull from hub Docker
+`docker run -d --name php_pepparkaka.lerenius.se --network nginx-proxy victorgamelounge/php_pepparkaka.lerenius.se:production`
+`docker run -d --name pepparkaka.lerenius.se --network nginx-proxy -e VIRTUAL_HOST=pepparkaka.lerenius.se victorgamelounge/pepparkaka.lerenius.se:production`

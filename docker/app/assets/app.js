@@ -7,12 +7,12 @@ angular.module('pepparkakaApp', [])
   ];
   pepparkaka.colours = {
     '#000000':'Off',
-    '#FFFFFF':'White',
-    '#FF00FF':'Magenta',
-    '#FFFF00':'Yellow',
-    '#FF0000':'Red',
-    '#0000FF':'Blue',
-    '#00FF00':'Green',
+    '#FFFFFF':'Vitt',
+    '#FF00FF':'Lila',
+    '#FFFF00':'Gul',
+    '#FF0000':'Röd',
+    '#0000FF':'Blå',
+    '#00FF00':'Grön',
   };
 
   pepparkaka.menu = {};
@@ -29,7 +29,7 @@ angular.module('pepparkakaApp', [])
   }
   pepparkaka.getMenu();
 
-  pepparkaka.setPepparkaka = function( menu, red, green, blue ) {
+  pepparkaka.setPepparkaka = function( menu, red, green, blue, mode ) {
     console.log([menu.port, red, green, blue]);
     $http({
       method : "POST",
@@ -39,10 +39,13 @@ angular.module('pepparkakaApp', [])
         'red':red,
         'green':green,
         'blue':blue,
+        'mode':mode,
       }
     }).then(function mySuccess(response) {
       if( response.data.success ) {
         menu.state = '#'+red+green+blue;
+        console.log(response.data.command);
+        console.log('----------');
       } else {
         console.log('Error getMenu A');
         alert( JSON.stringify( response ) );
