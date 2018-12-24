@@ -6,6 +6,21 @@ import serial.tools.list_ports
 DEBUG = True;
 SER_BAUDRATE = 9600
 controllers = list()
+ser = serial
+
+class Controller:
+    def __init__(self, device):
+        try:
+            self.ser = serial.Serial(device)
+        except (OSError, serial.SerialException):
+            debug_print("Failed to connect to :" + device)
+
+    def __del__(self):
+        self.ser.close()
+
+    def write(self,msg):
+        self.ser.write(msg)
+        self.ser.flush()
 
 
 def debug_print(msg):
@@ -19,8 +34,9 @@ def scan_serial_ports():
         try:
             # configure the serial connections (the parameters differs on the device you are connecting to)
             ser = serial.Serial('COM6') #p.device, timeout=1)
+            time.sleep(1)
             print(p.device)
-            for i in range(10):
+            for i in range(2):
                 ser.write('ENA03000\n')
                 ser.flush()
                 time.sleep(0.5)
@@ -36,16 +52,17 @@ def scan_serial_ports():
 
 
 def send_to_ctrl(msg):
-    debug_print("Send to Ctrl: " + controllers[0] + " -> " + msg.strip())
-    with serial.Serial(controllers[0], timeout=1) as ser:
-        ser.write(msg.encode('ascii'))
-        ser.flush()
-        debug_print('Sent: ' + msg.encode('ascii').strip())
+    debug_print("Send to Ctrl: " + msg.strip())
+    ser.write(bytes(msg))
+    ser.flush()
+    debug_print('Sent: ' + msg.encode('ascii').strip())
 
 
 def main():
+    global ser
+
     server_socket = socket.socket(
-        socket.AF_INET, socket.SOCK_STREAM)
+      socket.AF_INET, socket.SOCK_STREAM)
 
     host = socket.gethostname()
     port = 5555
@@ -54,7 +71,7 @@ def main():
 
     server_socket.listen(5)
 
-    scan_serial_ports()
+    # scan_serial_ports()
 
     while True:
         debug_print('Waiting for connection')
@@ -65,10 +82,15 @@ def main():
         msg = "CONNECTED\n"
         clientsocket.send(msg.encode('ascii'))
 
-        while not "DISCONNECT" in msg:
-            msg = clientsocket.recv(1024).decode('ascii')
-            debug_print("Socket received: " + msg.strip())
-            send_to_ctrl(msg)
+        try:
+            ser = serial.Serial('COM6', timeout=1)
+            while not "DISCONNECT" in msg:
+                msg = clientsocket.recv(1024).decode('ascii')
+                debug_print("Socket received: " + msg.strip())
+                send_to_ctrl(msg)
+        except (OSError, serial.SerialException):
+            debug_print("Failed to comunicate")
+
 
         msg = "Closing connection\n"
         clientsocket.send(msg.encode('ascii'))
