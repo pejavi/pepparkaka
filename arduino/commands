@@ -1,0 +1,10 @@
+To Enable channel
+ENAxx - Turn channel on/off must be exactly two char: xx=channel
+DISxx - Turn channel on/off two char, xx = channel
+PWMxxyyy - xx = ch, yyy = value 0-255, not available for all channels
+BLIxx - Set current channel to blink
+RGBxxrrrgggbbbwww Set xx=channel, r=red etc.
+STA - Return current status
+
+Return in the form ch:en:pwm:blink\n
+ 

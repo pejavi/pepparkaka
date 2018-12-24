@@ -4,15 +4,10 @@
  
  A signal in to the serial interface will be converted to the correct function
  */
-#include <Adafruit_NeoPixel.h>
-#define DEVICE 2
-#define LEDS 50
+int DEVICE = 1;
 String inNumber = "";    // string to hold input
 String inCommand = "";    // string to hold input
-String inR = "";    // string to hold input
-String inG = "";    // string to hold input
-String inB = "";    // string to hold input
-String inValue ="";
+String inValue = "";    // string to hold input
 int chnr = 0; // Char number
 int state = HIGH;       // The input state
 int value12 = LOW;
@@ -24,20 +19,8 @@ int pwmcounter=0;
 int blink [14];
 int pwm [14];
 int en [14];
-int r [LEDS];
-int g [LEDS];
-int b [LEDS];
 unsigned long time = 0;
-#define PIN 2
-// Parameter 1 = number of pixels in strip
-// Parameter 2 = Arduino pin number (most are valid)
-// Parameter 3 = pixel type flagqs, add together as needed:
-// NEO_KHZ800 800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-// NEO_KHZ400 400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-// NEO_GRB Pixels are wired for GRB bitstream (most NeoPixel products)
-// NEO_RGB Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-// NEO_RGBW Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LEDS, PIN, NEO_GRB + NEO_KHZ800);
+
 void setup()
 {
   //Setup PWM
@@ -54,17 +37,20 @@ void setup()
     pwm[ch]=0;
     en[ch]=0;
   }
-  strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
+  pinMode(2, OUTPUT);   
+  pinMode(3, OUTPUT);   
+  pinMode(4, OUTPUT);   
+  pinMode(5, OUTPUT);   
+  pinMode(6, OUTPUT);   
+  pinMode(7, OUTPUT);   
+  pinMode(8, OUTPUT);   
+  pinMode(9, OUTPUT);   
+  pinMode(10, OUTPUT);   
+  pinMode(11, OUTPUT);   
+  pinMode(12, OUTPUT);  
+  pinMode(13, OUTPUT);  
+  pinMode(A0, INPUT);
   //establishContact();  // send a byte to establish contact until receiver responds 
-}
-// Fill the dots one after the other with a color
-void setColors() {
- for(uint16_t i=0; i<strip.numPixels(); i++) {
-  strip.setPixelColor(i, en[i]==0?strip.Color(0, 0, 0):strip.Color(r[i], g[i], b[i]));
-  strip.show();
-  delay(50);
- }
 }
 void toggleLED(int channel, int value){
         Serial.print(channel);
@@ -86,7 +72,6 @@ void toggleLED(int channel, int value){
             analogWrite(channel, pwm[channel]);
         }
 }
-
 void loop()
 {
   value12 = analogRead(A0);
@@ -149,44 +134,28 @@ void loop()
     else if (isAlpha(inChar)) { //char 3+
       chnr++;
     }
-    else if (isDigit(inChar) && chnr>=3 && chnr<=4){ //char 3-4
+    else if (isDigit(inChar) && chnr>2 && chnr<5){ //char 3-4
       inNumber += (char)inChar;
       chnr++;
     }
-    else if (isDigit(inChar) && chnr>=5 && chnr<=7){ //char 5-7
-      inR += (char)inChar;
-      chnr++;
-    }
-    else if (isDigit(inChar) && chnr>=8 && chnr<=10){ //char 8-10
-      inG += (char)inChar;
-      chnr++;
-    }
-    else if (isDigit(inChar) && chnr>=11  && chnr<=13){ //char 11-13
-      inB += (char)inChar;
+    else if (isDigit(inChar) && chnr> 4 && chnr<8){ //char 5-7
+      inValue += (char)inChar;
       chnr++;
     }
     else if (inChar == '\n') {
-      if (inCommand=="RGB"){ 
+      if (inCommand=="PWM"){ 
+        int fadeValue = inValue.toInt();
         int channel = inNumber.toInt();
-        r[channel] = inR.toInt();
-        g[channel] = inG.toInt();
-        b[channel] = inB.toInt();
-        en[channel] = 1;
-        setColors();
+        if (fadeValue > 255)
+          fadeValue = 255;
+        pwm[channel]=fadeValue;
+        toggleLED(channel, 1);
       }
       else if (inCommand== "ENA"){
-        int ch = inNumber.toInt();
-        //int value = inValue.toInt();
-        //toggleLED(channel, value>0?1:0);
-        if (ch<LEDS) en[ch]=1;
-        setColors();
-      }
-      else if (inCommand== "DIS"){
-        int ch = inNumber.toInt();
-        //int value = inValue.toInt();
-        //toggleLED(channel, value>0?1:0);
-        if (ch<LEDS) en[ch]=0;
-        setColors();
+        int channel = inNumber.toInt();
+        int value = inValue.toInt();
+        toggleLED(channel, value>0?1:0);
+
       }
       else if (inCommand== "BLI"){
         int channel = inNumber.toInt();
@@ -294,9 +263,6 @@ void loop()
       inCommand="";
       inValue = "";
       inNumber = "";
-      inB = "";
-      inG = "";
-      inR = "";
       chnr=0;
       
     }
