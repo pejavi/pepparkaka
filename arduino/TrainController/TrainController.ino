@@ -4,7 +4,8 @@
  
  A signal in to the serial interface will be converted to the correct function
  */
-int DEVICE = 1;
+#define DEVICE 1
+#define LEDS 15
 String inNumber = "";    // string to hold input
 String inCommand = "";    // string to hold input
 String inValue = "";    // string to hold input
@@ -12,13 +13,13 @@ int chnr = 0; // Char number
 int state = HIGH;       // The input state
 int value12 = LOW;
 int blinking = 0;
-int train = 0;
+int train = 1;
 int number=0;
 int counter=0;
 int pwmcounter=0;
-int blink [14];
-int pwm [14];
-int en [14];
+uint8_t blink [LEDS];
+uint8_t pwm [LEDS];
+uint8_t en [LEDS];
 unsigned long time = 0;
 
 void setup()
@@ -50,6 +51,7 @@ void setup()
   pinMode(12, OUTPUT);  
   pinMode(13, OUTPUT);  
   pinMode(A0, INPUT);
+  digitalWrite(4, HIGH);
   //establishContact();  // send a byte to establish contact until receiver responds 
 }
 void toggleLED(int channel, int value){
@@ -79,7 +81,7 @@ void loop()
   if (value12<100 && train>0) {
     if (state==HIGH){
       Serial.println("A0:0");
-      blinking=16;
+      blinking=10;
       time=0;
     }
     state=LOW;
@@ -90,23 +92,23 @@ void loop()
       state=HIGH;
     }
   if (blinking > 0){
-    if (time==5000){
+    if (time==3000){
      time=0;
      blinking--;
      if (blinking == 0){
        digitalWrite(8, LOW);
        digitalWrite(7, LOW);
-       digitalWrite(2, HIGH);
+       digitalWrite(3, HIGH);
      }
      else if (blinking%2==0) {
        digitalWrite(8, HIGH);
        digitalWrite(7, LOW);
-       digitalWrite(2, LOW);
+       digitalWrite(3, LOW);
      }
      else{
        digitalWrite(8, LOW);
        digitalWrite(7, HIGH);
-       digitalWrite(2, LOW);
+       digitalWrite(3, LOW);
      }
     }
   }
@@ -153,8 +155,12 @@ void loop()
       }
       else if (inCommand== "ENA"){
         int channel = inNumber.toInt();
-        int value = inValue.toInt();
-        toggleLED(channel, value>0?1:0);
+        toggleLED(channel, 1);
+
+      }
+      else if (inCommand== "DIS"){
+        int channel = inNumber.toInt();
+        toggleLED(channel, 0);
 
       }
       else if (inCommand== "BLI"){
@@ -176,27 +182,33 @@ void loop()
         int fadeValue = inValue.toInt();
         int channel = inNumber.toInt();
         train = channel;
-        Serial.print("TRN:");
+        Serial.print(F("TRN:"));
         Serial.println(channel);
+        if(train==1){
+          blinking=8;
+          time=0;
+        }
       }
       else if (inCommand== "NUM"){
         int fadeValue = inValue.toInt();
         int channel = inNumber.toInt();
         number = channel*20;
-        Serial.print("NUM:");
+        Serial.print(F("NUM:"));
         Serial.println(channel);
       }
       else if (inCommand== "BLU"){
         int fadeValue = inValue.toInt();
         int channel = inNumber.toInt();
-        Serial.print("BLI:");
+        Serial.print(F("BLI:"));
         blinking=channel;
         Serial.println(blinking);
         time=0;
       }
       else if (inCommand== "ID" || inCommand == "ID?"){
-        Serial.print("PWMtool:");
-        Serial.print(DEVICE);
+        Serial.print(F("PWMtool:"));
+        Serial.print(LEDS);
+        Serial.print(F(":"));
+        Serial.println(DEVICE);
       }
       else if (inCommand== "VER"){
         Serial.println("1.1");
@@ -206,58 +218,58 @@ void loop()
         int channel = inNumber.toInt();
         if (channel == 5 || channel == 6){
           if (value==1) {setPwmFrequency(6 , 1);
-          Serial.println("PIN5&6:62500");}
+          Serial.println(F("PIN5&6:62500"));}
           if (value==2) {setPwmFrequency(6 , 8);
-          Serial.println("PIN5&6:7812");}
+          Serial.println(F("PIN5&6:7812"));}
           if (value==3) {setPwmFrequency(6 , 64);
-          Serial.println("PIN5&6:977");}
+          Serial.println(F("PIN5&6:977"));}
           if (value==4) {setPwmFrequency(6 , 256);
-          Serial.println("PIN5&6:62.5k/256");}
+          Serial.println(F("PIN5&6:62.5k/256"));}
           if (value==5) {setPwmFrequency(6 , 1024);
-          Serial.println("PIN5&6:62.5K/1024");}
+          Serial.println(F("PIN5&6:62.5K/1024"));}
         }
         if (channel == 9 || channel == 10){
           if (value==1) {setPwmFrequency(9 , 1);
-          Serial.println("PIN9&10:62500");}
+          Serial.println(F("PIN9&10:62500"));}
           if (value==2) {setPwmFrequency(9 , 8);
-          Serial.println("PIN9&10:7812");}
+          Serial.println(F("PIN9&10:7812"));}
           if (value==3) {setPwmFrequency(9 , 64);
-          Serial.println("PIN9&10:977");}
+          Serial.println(F("PIN9&10:977"));}
           if (value==4) {setPwmFrequency(9 , 256);
-          Serial.println("PIN9&10:62.5k/256");}
+          Serial.println(F("PIN9&10:62.5k/256"));}
           if (value==5) {setPwmFrequency(9 , 1024);
-          Serial.println("PIN9&10:62.5K/1024");}
+          Serial.println(F("PIN9&10:62.5K/1024"));}
         }
         if (channel == 3 || channel == 11){
           if (value==1) {setPwmFrequency(3 , 1);
-          Serial.println("PIN3&11:31250");}
+          Serial.println(F("PIN3&11:31250"));}
           if (value==2) {setPwmFrequency(3 , 8);
-          Serial.println("PIN3&11:31K/8");}
+          Serial.println(F("PIN3&11:31K/8"));}
           if (value==3) {setPwmFrequency(3 , 32);
-          Serial.println("PIN3&11:31K/32");}
+          Serial.println(F("PIN3&11:31K/32"));}
           if (value==4) {setPwmFrequency(3 , 64);
-          Serial.println("PIN3&11:31K/64");}
+          Serial.println(F("PIN3&11:31K/64"));}
           if (value==5) {setPwmFrequency(3 , 128);
-          Serial.println("PIN3&11:31K/128");}
+          Serial.println(F("PIN3&11:31K/128"));}
           if (value==6) {setPwmFrequency(3 , 256);
-          Serial.println("PIN3&11:31K/256");}
+          Serial.println(F("PIN3&11:31K/256"));}
           if (value==7) {setPwmFrequency(3 , 1024);
-          Serial.println("PIN3&11:31K/1024");}
+          Serial.println(F("PIN3&11:31K/1024"));}
         }
       }
       else if (inCommand== "?" || inCommand== "HEL"){
-        Serial.println("ID - Returns ID of the device");
-        Serial.println("VER - Returns the SW Version");
-        Serial.println("PWMxxyyy - Sets PWM duty for ch xx to yyy(0-255)");
-        Serial.println("ENAxxyyy - Enable pin xx, set to yyy (1 or 0)");
-        Serial.println("BLIxx - Set blinking ch xx");
-        Serial.println("FRQ - Sets the PWM FREQ");
-        Serial.println("PWM PINs 9 and 6 are used, freq are not the same");
+        Serial.println(F("ID - Returns ID of the device"));
+        Serial.println(F("VER - Returns the SW Version"));
+        Serial.println(F("PWMxxyyy - Sets PWM duty for ch xx to yyy(0-255)"));
+        Serial.println(F("ENAxxyyy - Enable pin xx, set to yyy (1 or 0)"));
+        Serial.println(F("BLIxx - Set blinking ch xx"));
+        Serial.println(F("FRQ - Sets the PWM FREQ"));
+        Serial.println(F("PWM PINs 9 and 6 are used, freq are not the same"));
       }
       else{
-        Serial.print("Unknown Command <");
+        Serial.print(F("Unknown Command <"));
         Serial.print(inCommand);
-        Serial.println(">");
+        Serial.println(F(">"));
       }
       // clear the string for new input:
       inCommand="";
@@ -266,21 +278,13 @@ void loop()
       chnr=0;
       
     }
-    else {
-      Serial.println("Unknown command");
-      inCommand="";
-      inValue = "";
-      inNumber = "";
-      chnr=0;
-    }
-    
   }
   
 }
 
 void establishContact() {
   while (Serial.available() <= 0) {
-    Serial.println("0,0,0");   // send an initial string
+    Serial.println(F("0,0,0"));   // send an initial string
     delay(300);
   }
 }
