@@ -18,7 +18,8 @@ class Controller:
         try:
             self.name = device
             self.ser = serial.Serial(device)
-            self.respons = ""
+            time.sleep(1)
+            self.response = ""
             self.thread = threading.Thread(target=self.read_from_port)
             self.thread.start()
         except (OSError, serial.SerialException):
@@ -29,7 +30,7 @@ class Controller:
 
     def write(self, msg):
         try:
-            logging.debug("Write to " + self.name + ": " + msg)
+            logging.debug("Write to " + self.name + ": " + msg.strip())
             self.ser.write(msg.encode('ascii'))
             self.ser.flush()
             # self.read()
@@ -37,14 +38,16 @@ class Controller:
             logging.warning("Failed to communicate with " + self.name)
 
     def read(self):
+        # TODO: Handle exceptions, like disconnecting cable
         msg = self.ser.readline()
-        self.respons = msg.strip()
-        logging.debug("Read from " + self.name + ": " + msg)
+        self.response = msg.strip()
+        logging.debug("Read from " + self.name + ": " + msg.strip())
         return msg
 
     def read_from_port(self):
         while True:
             self.read()
+        logging.error("Stopped reading " + self.name)
 
 
 def debug_print(msg):
@@ -56,14 +59,19 @@ def scan_serial_ports():
     serial_ports = serial.tools.list_ports.comports()
     for p in serial_ports:
         try:
+            logging.info("Try to attach to " + str(p))
             ctrl = Controller(p.device)
-            logging.info("Try to attach to " + p.device)
-            time.sleep(0.5)
+            time.sleep(1)
             ctrl.write('ID?\n')
-            controllers.append(ctrl)
+            time.sleep(0.5)
+            if "RGBW" in ctrl.response:
+                logging.info("Successfully connected to " + p.device)
+                controllers.append(ctrl)
         except (OSError, serial.SerialException):
             logging.warning("Failed to connect to :" + p.device)
 
+    if not controllers:
+        logging.error("No ports found!")
 
 def main():
     server_socket = socket.socket(
