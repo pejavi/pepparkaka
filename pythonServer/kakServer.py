@@ -47,6 +47,7 @@ class Controller:
     def read_from_port(self):
         while True:
             self.read()
+        logging.error("Stopped reading " + self.name)
 
 
 def debug_print(msg):
