@@ -106,7 +106,7 @@ def main():
             client_socket.send(msg.encode('ascii'))
 
         except socket.error, e:
-            logging.error("Socket error" + str(e))
+            logging.error("Socket error" + e)
 
         finally:
             logging.info('Disconnecting client ')# + str(client_socket.getpeername()))
