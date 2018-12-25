@@ -1,0 +1,14 @@
+Station 1 2
+Lastbil 4
+Stins 6
+Bod1 8 9
+Bod2 10 11
+Bod3 12 13 14 
+Bod4 15 16
+Frisören 18
+Stuga 20
+Tomtestuga 22
+Skorsten 23
+Tomtestuga2 25
+Förort1 29-33
+Förort2 36-40
