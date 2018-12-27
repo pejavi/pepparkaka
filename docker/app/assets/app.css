@@ -40,6 +40,16 @@
     left: -6px;
 }
 
+header {z-index:1;}
 body, html {width: 100%; height: 100%; margin: 0; padding: 0}
 .camera {position: absolute; top: 50px; left: 0; right: 0; bottom: 0; background-color: white }
-.camera iframe {display: block; width: 100%; height: 100%; border: none;z-index:9999}
+.camera iframe {display: block; width: 100%; height: 100%; border: none;z-index:1001}
+nav, .navbar, .dropdown-menu, .nav, .navbar-nav {
+  background: white;
+}
+.navbar {
+  position: static;
+}
+.navbar .nav > li {
+  z-index: 1001;
+}
