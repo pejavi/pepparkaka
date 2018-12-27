@@ -1,3 +1,5 @@
+<?php
+
 if(isset($_GET['php']))
 	die(phpinfo());
 $microtime_start=microtime(true);

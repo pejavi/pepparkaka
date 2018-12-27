@@ -39,3 +39,6 @@
     top: 11px;
     left: -6px;
 }
+
+.camera {position: absolute; top: 100px; left: 0; right: 0; bottom: 0; background-color: red }
+.camera iframe {display: block; width: 100%; height: 100%; border: none;}
