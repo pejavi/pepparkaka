@@ -29,7 +29,7 @@ class Pepparkaka {
   public function send()
   {
     $post = json_decode( file_get_contents( "php://input" ) );
-    $port = sprintf("%02d", hexdec( $post->port ) );
+    $port = sprintf("%02d", $post->port );
     $red = sprintf("%03d", hexdec( $post->red ) );
     $green = sprintf("%03d", hexdec( $post->green ) );
     $blue = sprintf("%03d", hexdec( $post->blue ) );
