@@ -16,7 +16,7 @@ def toggle(pin):
 	
 def switch(pin):
     msg = "RELAY;" + id + ";LED%02d\n" % pin
-    #print " Switch LED " + str(pin) + '\n' + "  " + msg
+    print " Switch LED " + str(pin) + '\n' + "  " + msg
     s.send(msg)
 
 

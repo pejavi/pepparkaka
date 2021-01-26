@@ -21,6 +21,7 @@ class Controller:
             time.sleep(1)
             self.response = ""
             self.thread = threading.Thread(target=self.read_from_port)
+            self.thread.daemon = True
             self.thread.start()
         except (OSError, serial.SerialException):
             logging.debug("Failed to connect to :" + device)
@@ -96,7 +97,12 @@ def main():
             client_socket.send(msg.encode('ascii'))
 
             while True:
-                msg = client_socket.recv(1024).decode('ascii')
+                try:
+                    msg = client_socket.recv(1024).decode('ascii')
+                except UnicodeDecodeError:
+                    logging.error("Received a non ascii message")
+                    break
+
                 if msg.strip() == "" or msg.strip() == "DISCONNECT":
                     break
                 logging.debug("Socket received: " + msg.strip())

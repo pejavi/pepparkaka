@@ -54,6 +54,7 @@ def main():
         msg = "RGB%02d" % i
         sendMsgToServer(msg + "000000000100\n")
 
+    time.sleep(3)
     for i in range(1000):
         r = int(round(random.random() * (len(leds)-1)))
         msg = "RGB%02d" % leds[r]
